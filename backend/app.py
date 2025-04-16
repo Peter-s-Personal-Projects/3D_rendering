@@ -52,7 +52,7 @@ def parse_osm_file(file_path):
                     'coordinates': [coords]
                 },
                 'properties': {
-                    'building': tags.get('building', 'yes'),
+                    'building': tags.get('building'),
                     'height': height,
                     'address': address,
                     'tags': tags
