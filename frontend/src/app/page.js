@@ -8,12 +8,22 @@ import Building from '../components/Building';
 export default function Home() {
   const [buildings, setBuildings] = useState([]);
   const [selectedBuilding, setSelectedBuilding] = useState(null);
+  const [origin, setOrigin] = useState([0, 0]);
 
   useEffect(() => {
     axios
       .get('http://localhost:5000/api/buildings')
       .then((response) => {
-        setBuildings(response.data.features || []);
+        const features = response.data.features || [];
+        setBuildings(features);
+  
+        // Calculate the global origin (e.g., average of all coords)
+        const allCoords = features.flatMap(f => f.geometry.coordinates[0]);
+        const avg = allCoords.reduce(
+          (acc, [lon, lat]) => [acc[0] + lon / allCoords.length, acc[1] + lat / allCoords.length],
+          [0, 0]
+        );
+        setOrigin(avg);
       })
       .catch((error) => {
         console.error('Error fetching buildings:', error);
@@ -24,7 +34,7 @@ export default function Home() {
     <div className="w-screen h-screen relative">
       <Canvas
         camera={{ position: [0, 50, 100], fov: 60 }}
-        onClick={() => setSelectedBuilding(null)}
+        // onClick={() => setSelectedBuilding(building)}
         className="w-full h-full"
       >
         <ambientLight intensity={0.5} />
@@ -33,11 +43,13 @@ export default function Home() {
           <planeGeometry args={[1000, 1000]} />
           <meshStandardMaterial color="#228B22" />
         </mesh>
-        <group>
+        <group rotation={[-Math.PI / 2, 0, 0]}>
           {buildings.map((building) => (
+            console.log('Rendering building:', building.id),
             <Building
               key={building.id}
               building={building}
+              origin={origin}
               onClick={() => setSelectedBuilding(building)}
             />
           ))}
@@ -46,35 +58,25 @@ export default function Home() {
       </Canvas>
       {selectedBuilding && (
         <div className="absolute top-4 left-4 bg-gray-800 bg-opacity-80 text-white p-4 rounded-lg shadow-lg max-w-xs sm:max-w-sm">
-          <h3 className="text-lg font-semibold mb-2">Building Info</h3>
+          <h3 className="text-lg text-black font-semibold mb-2">Building Info</h3>
           <p className="text-sm">
-            <span className="font-medium">Address:</span> {selectedBuilding.properties.address || 'Unknown'}
+            <span className="font-medium text-black">Address:</span> {selectedBuilding.properties.address || 'Unknown'}
           </p>
           <p className="text-sm">
-            <span className="font-medium">Type:</span> {selectedBuilding.properties.building}
+            <span className="font-medium text-black">Type:</span> {selectedBuilding.properties.building}
           </p>
           <p className="text-sm">
-            <span className="font-medium">Height:</span> {selectedBuilding.properties.height}m
+            <span className="font-medium text-black">Height:</span> {selectedBuilding.properties.height}m
           </p>
           <button
-            onClick={() => setSelectedBuilding(null)}
+            onClick={() => setSelectedBuilding(building)}
             className="mt-3 bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1 rounded"
           >
             Close
           </button>
         </div>
       )}
-      <div className="absolute top-4 right-4 bg-white p-4 rounded-lg shadow-lg max-w-xs sm:max-w-sm">
-        <h3 className="text-lg font-semibold mb-2">Controls</h3>
-        <input
-          type="text"
-          placeholder="e.g., commercial buildings"
-          className="w-full p-2 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button className="mt-2 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm">
-          Search
-        </button>
-      </div>
+      
     </div>
   );
 }

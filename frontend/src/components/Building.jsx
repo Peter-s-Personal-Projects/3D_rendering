@@ -2,7 +2,7 @@
 import { useState, useMemo } from 'react';
 import * as THREE from 'three';
 
-export default function Building({ building, onClick }) {
+export default function Building({ building, onClick, origin }) {
   const [hovered, setHovered] = useState(false);
   const { geometry, properties } = building;
   const coords = geometry.coordinates[0];
@@ -12,8 +12,8 @@ export default function Building({ building, onClick }) {
     [0, 0]
   );
   const points = coords.map(([lon, lat]) => [
-    (lon - center[0]) * 10000,
-    (lat - center[1]) * 10000,
+    (lon - origin[0]) * 10000,
+    (lat - origin[1]) * 10000,
   ]);
 
   const shape = useMemo(() => {
@@ -34,7 +34,7 @@ export default function Building({ building, onClick }) {
     <mesh
       onClick={(e) => {
         e.stopPropagation();
-        onClick();
+        onClick(building)
       }}
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
