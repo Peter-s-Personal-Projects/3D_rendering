@@ -66,7 +66,7 @@ def parse_osm_file(file_path):
 
 @app.route('/api/buildings', methods=['GET'])
 def get_buildings():
-    data = parse_osm_file('map.osm')
+    data = parse_osm_file('./map.osm')
     if 'error' in data:
         return jsonify(data), data.get('error_code', 500)
     return jsonify(data['buildings'])
