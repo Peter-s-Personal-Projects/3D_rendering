@@ -7,6 +7,7 @@ export default function Building({ building, onClick, origin }) {
   const { geometry, properties } = building;
   const coords = geometry.coordinates[0];
 
+
   const center = coords.reduce(
     (acc, [lon, lat]) => [acc[0] + lon / coords.length, acc[1] + lat / coords.length],
     [0, 0]

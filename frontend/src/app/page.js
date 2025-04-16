@@ -31,8 +31,8 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="w-screen h-screen relative">
-      <Canvas
+    <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
+      <Canvas style={{ width: '100vw', height: '60vh', position: 'relative' }}
         camera={{ position: [0, 50, 100], fov: 60 }}
         // onClick={() => setSelectedBuilding(building)}
         className="w-full h-full"
@@ -69,7 +69,7 @@ export default function Home() {
             <span className="font-medium text-black">Height:</span> {selectedBuilding.properties.height}m
           </p>
           <button
-            onClick={() => setSelectedBuilding(building)}
+            onClick={() => setSelectedBuilding(null)}
             className="mt-3 bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1 rounded"
           >
             Close
