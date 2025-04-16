@@ -12,7 +12,7 @@ export default function Home() {
 
   useEffect(() => {
     axios
-      .get('http://localhost:5000/api/buildings')
+      .get('https://threed-rendering.onrender.com/api/buildings')
       .then((response) => {
         const features = response.data.features || [];
         setBuildings(features);
